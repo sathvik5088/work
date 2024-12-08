@@ -1,0 +1,30 @@
+ansible dev -b -m copy -a "src=/home/ansible/file.txt dest=/home/ansible/"
+
+ansible dev -b -m command -a "mv /home/ansible/file.txt /home/ansible/"
+
+ansible dev -b -m command -a "rm -f /home/ansible/second.txt"
+
+ansible dev -b -m command -a "chdir=/home/ansible/sam/ ls"
+
+ansible dev -b -m file -a "path=/home/ansible/sam state=directory"
+
+ansible dev -b -m file -a "path=/home/ansible/sam state=absent"
+
+ansible dev -b -m file -a "path=/home/ansible/newfile.txt state=touch"
+
+ansible dev -b -m file -a "path=/home/ansible/newfile.txt state=absent"
+
+ansible dev -b -m file -a "content='hello world' dest=/home/ansible/newfile.txt mod=777"
+
+ansible dev -b -m file -a "path=/home/ansible/newfile.txt state=absent"
+
+ansible dev -b -m yum -a "name=git state=present"
+
+ansible dev -b -m yum -a "name=docker state=present"
+
+ansible dev -b -m docker_image -a "name=httpd pull=true"
+
+ansible dev -b -m docker_container -a "name=httpd_container image=httpd state=started"
+
+amsible dev -b -m git -a "repo=https://github.com/sathvik5088/work.git dest=/home/ansible"
+
