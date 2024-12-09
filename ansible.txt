@@ -26,5 +26,5 @@ ansible dev -b -m docker_image -a "name=httpd pull=true"
 
 ansible dev -b -m docker_container -a "name=httpd_container image=httpd state=started"
 
-amsible dev -b -m git -a "repo=https://github.com/sathvik5088/work.git dest=/home/ansible"
+amsible dev -b -m git -a "repo=https://github.com/shivarajkumarbk0/work.git dest=/home/ansible"
 
