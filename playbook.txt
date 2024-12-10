@@ -1,0 +1,133 @@
+---
+- name: Install Git and pull the code
+  hosts: dev
+  become: yes
+  connection: ssh
+  vars:
+    repo_url: "https://github.com/sathvik5088/work.git"
+    dest: "/home/ansible"
+  tasks:
+  - name: To install Git
+    yum: 
+      name: git
+      state: present
+  - name: Clone the repository
+    git:
+      repo: "{{ repo_url }}"
+      dest: "{{ dest }}"
+      version: main
+  - name: Pull the latest code
+    git:
+      repo: "{{ repo_url }}"
+      dest: "{{ dest }}"
+      version: main
+      force: yes
+      update: yes
+
+-----------------------------------------------------------------------------------------------------------
+
+---
+- name: Install Java 17 and Maven
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Java 17
+      yum:
+        name: java-17-openjdk
+        state: present
+
+    - name: Download and run Maven install script
+      get_url:
+        url: "https://install-maven.sh"  
+        dest: "/tmp/install-maven.sh"
+        mode: '777'
+
+    - name: Execute Maven install script
+      shell: /tmp/install-maven.sh
+
+    - name: Verify Maven installation
+      command: mvn --version
+      register: maven_version
+      ignore_errors: yes
+
+    - name: Show Maven version
+      debug:
+        msg: "{{ maven_version.stdout }}"
+
+---------------------------------------------------------------------------------------------------------------
+
+---
+- name: Install Java, Maven, and Jenkins
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Java, Maven, and Jenkins
+      yum:
+        name:
+          - java-17-openjdk
+          - maven
+          - jenkins
+        state: present
+
+    - name: Add Jenkins repository
+      shell: |
+        wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+    - name: Start and enable Jenkins
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+----------------------------------------------------------------------------------------------------------------
+
+---
+- name: Install Docker and run Nginx container
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull Nginx image
+      command: docker pull nginx
+
+    - name: Run Nginx container
+      command: docker run -it -d -p 80:80 --name app nginx
+
+-----------------------------------------------------------------------------------------------------------------
+
+---
+- name: Copy and execute shell script on worker node
+  hosts: worker
+  become: yes
+
+  vars:
+    shell_file: "/hme/ansible/sam/script.sh"  
+    dest_path: "/home/ansible/script.sh"       
+
+  tasks:
+    - name: Copy shell script to worker node
+      copy:
+        src: "{{ shell_file }}"
+        dest: "{{ dest_path }}"
+        mode: '777'
+
+    - name: Execute the shell script on worker node
+      shell: "{{ dest_path }}"
+
+
+
+
